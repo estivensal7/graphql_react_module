@@ -10,7 +10,8 @@ const {
 	GraphQLString,
 	GraphQLSchema,
 	GraphQLID,
-	GraphQLInt
+	GraphQLInt,
+	GraphQLList
 } = graphql;
 
 //dummy data
@@ -65,10 +66,10 @@ const AuthorType = new GraphQLObjectType({
 		name: { type: GraphQLString },
 		age: { type: GraphQLInt },
 		books: {
-			type: BookType,
+			type: new GraphQLList(BookType),
 			resolve(parent, args) {
-				return _.find(books, {
-					id: parent.id
+				return _.filter(books, {
+					authorId: parent.id
 				});
 			}
 		}
@@ -97,6 +98,18 @@ const RootQuery = new GraphQLObjectType({
 			resolve(parent, args) {
 				//code to get data from db / other source
 				return _.find(authors, { id: args.id });
+			}
+		},
+		books: {
+			type: GraphQLList(BookType),
+			resolve(parent, args) {
+				return books;
+			}
+		},
+		authors: {
+			type: GraphQLList(AuthorType),
+			resolve(parent, args) {
+				return authors;
 			}
 		}
 	}
